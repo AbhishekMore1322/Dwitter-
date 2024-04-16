@@ -16,14 +16,14 @@ App={
         console.log("Metamask Detected");
         window.web3 = new Web3(window.ethereum);
         try {
-        $("#msg").text("Please connect your metamask") 
+          document.getElementById("msg").innerHTML = "Please connect your metamask" 
        // var res = await ethereum.enable();
-       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+       const accounts = await window.ethereum.request({ "method": "eth_requestAccounts" });
        const account = accounts[0];
        console.log(account);
-        console.log(trylog)
-        App.network=await web3.eth.net.getNetworkType();
-        console.log(App.network);
+       document.getElementById("msg").innerHTML = account + " Connected"
+
+       $("#registerModal").modal("show");
         } catch (error) {
         $("#generalMsgModal").modal("show");
         $("#generalModalMessage").text("Permission Denied, Metamask Not connected!");
@@ -41,6 +41,7 @@ App={
 
     loadAccount: async () => {
     App.account = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    console.log(App.account)
     },
 
     loadContract: async () => {

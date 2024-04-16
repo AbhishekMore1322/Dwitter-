@@ -242,13 +242,14 @@
 
 <body>
  <div>
-  <button id="connect" onclick="Connect()" >Connect</button>
+  <button id="connect" onclick="Connect()">Connect</button>
  </div>
   <div id="loader" class="text-white text-center">
     <h2>Connecting You to Decentralised Social Network</h2>
     <br>
     <h4 id="msg"></h4>
   </div>
+
 
   <!-- Register Modal -->
 <div class="modal" id="registerModal" style="z-index: 99999;">
@@ -258,7 +259,7 @@
       <!-- Modal Header -->
       <div class="modal-header">
         <h4 class="modal-title">Register Here to access Website</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
       </div>
 
       <!-- Register body -->
@@ -290,7 +291,7 @@
             <input type="text" class="form-control" id="bio" placeholder="Bio" >
           </div>
           <h3 id="registerModalMsg" style="align-self: center; color:#e85e6c;"></h3>
-          <button type="button" id="registerBtn" class="btn btn-primary">Submit</button>
+          <button type="submit" id="registerBtn" class="btn btn-primary">Submit</button>
         </form>
       </div>
 
@@ -319,7 +320,7 @@
 			<div class="modal-body text-center">
 				<h4>Ooops!</h4>	
 				<p id="generalModalMessage">Error!!!!</p>
-				<!-- <button class="btn btn-success" data-dismiss="modal">Try Again</button> -->
+				<button class="btn btn-success" data-dismiss="modal">Try Again</button>
 			</div>
 		</div>
 	</div>
