@@ -6,6 +6,7 @@ App={
         await App.loadWeb3();
         await App.loadAccount();
         await App.loadContract();
+        await App.loadUserProfile();
         await App.checkUser();
         await App.render();
     },
@@ -23,7 +24,9 @@ App={
        console.log(account);
        document.getElementById("msg").innerHTML = account + " Connected"
 
-       $("#registerModal").modal("show");
+      //  $("#registerModal").modal("show");
+      //  await App.loadUserProfile();
+      // await loadUserProfile();
         } catch (error) {
         $("#generalMsgModal").modal("show");
         $("#generalModalMessage").text("Permission Denied, Metamask Not connected!");
@@ -1234,7 +1237,7 @@ App={
           }
         ];
         
-        App.ganache="0xE56127a4Ee762905f321EEe4f42a0ecd3189f6EB";
+        App.ganache="0xF200f8fD49212be89f39bF8e02254fC9550AD1DB";
 
         App.contracts.dwitter = new web3.eth.Contract(abi, App.ganache);
 
@@ -1459,7 +1462,8 @@ App={
     }
   },
 
-  registerUser:async(e) => {
+  registerUser:async(e) => {   
+
     e.preventDefault();
     let userName = $("#username").val();
     let name = $("#name").val();
@@ -1475,9 +1479,88 @@ App={
     let userStatus = await App.contracts.dwitter.methods.getUser().call();
     console.log(userStatus);
 
+
     // $("#dweetModal").modal("show");
 
-  }
+  },
+
+  loadUserProfile:async(e)=>{
+    App.userStatus=await App.contracts.dwitter.methods.userStatus().call({from:App.account});
+    console.log(App.userStatus);
+    if(App.userStatus==0){
+      console.log("Working Here");
+        App.setLoading(true);
+        $('#registerModal').modal("show");
+        $('#ethAddressForRegisterModal').text(App.account);
+        $('#registerBtn').on("click",async ()=>{
+          $("#registerModalMsg").text("Processing...");
+          /*let img=$("#profileImg").prop('files')[0];
+          console.log(img);
+          let cover=$("#coverImg").prop('files')[0];
+          console.log(cover);
+          const reader1 = new FileReader();
+          const reader2 = new FileReader();
+          reader1.readAsArrayBuffer(img);
+          reader2.readAsArrayBuffer(cover);
+          var buf1;
+          var buf2;
+
+          buf1 = buffer.Buffer(reader1.result); // Convert data into buffer
+             console.log(buf1); 
+             buf2 = await buffer.Buffer(reader2.result); // Convert data into buffer
+             console.log(buf2); 
+              // var result1=await App.ipfs.files.add(buf1) // Upload buffer to IPFS
+              // var result2=await App.ipfs.files.add(buf2);
+              */
+              let userName = $("#username").val();
+              let name = $("#name").val();
+              let bio = $("#bio").val();
+              let result1 = "0xabc58c36475157c4ac7669f9adfbb6f254d3a3578fb89676f6866ac3b9950eed";
+              let result2 = "0xabc58c36475157c4ac7669f9adfbb6f254d3a3578fb89676f6866ac3b9950eed";
+              try {
+                await App.contracts.dwitter.methods.registerUser(userName,name,result1,result2,bio).send({from:App.account[0]});
+
+              } catch (error) {
+                $('#registerModal').modal("hide");
+              App.setLoading(false);
+              // location.reload();
+              }
+              
+
+          // reader1.onloadend = async function() {
+          //    buf1 = buffer.Buffer(reader1.result); // Convert data into buffer
+          //    console.log(buf1); 
+          //    buf2 = await buffer.Buffer(reader2.result); // Convert data into buffer
+          //    console.log(buf2); 
+          //    reader2.onloadend = async function() {
+          //     // var result1=await App.ipfs.files.add(buf1) // Upload buffer to IPFS
+          //     // var result2=await App.ipfs.files.add(buf2);
+          //     result1[0] = "0xabc58c36475157c4ac7669f9adfbb6f254d3a3578fb89676f6866ac3b9950eed";
+          //     result2[0] = "0xabc58c36475157c4ac7669f9adfbb6f254d3a3578fb89676f6866ac3b9950eed";
+          //     await App.contracts.dwitter.methods.registerUser($("#username").val(),$("#name").val(),result1[0],result2[0],$("#bio").val()).send({from:App.account});
+          //     $('#registerModal').modal("hide");
+          //     App.setLoading(false);
+          //     location.reload();
+          //   }
+          // }
+        });
+    }else if(App.userStatus==2){
+      App.showError("Your Account Has been Banned due Violations of the Platform");
+    }
+    else if(App.userStatus==3){
+      App.showError("Your Account Has been Deleted");
+    }
+    else{
+    App.user=await App.contracts.dwitter.methods.getUser().call({from:App.account});
+    $("#account").text(App.account);
+    $("#fullname").text(App.user.name);
+    $("#username").text(App.user.username);
+    $("#userBio").text(App.user.bio);
+    $("#userProfileImage").css("background-image", "url( https://ipfs.io/ipfs/" + App.user.imghash+ ")");;
+    $("#userCoverImage").css("background-image", "url( https://ipfs.io/ipfs/" + App.user.coverhash+ ")");;
+
+    }
+  },
 };
 
 
@@ -1486,6 +1569,6 @@ $(() => {
     App.load();
     $("#fundsBtn").on("click",App.withdrawContractFunds);
     $("#maintainerBtn").on("click",App.maintainerSettings);
-    $("#registerBtn").on("click",App.registerUser);
+    $("#registerBtn").on("click",App.loadUserProfile);
   });
 });
