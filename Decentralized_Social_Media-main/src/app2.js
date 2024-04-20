@@ -1234,7 +1234,7 @@ App={
           }
         ];
         
-        App.ganache="0x948CFfbB460881fa8Fc3C7735736f7a408b1f1Fb";
+        App.ganache="0xE56127a4Ee762905f321EEe4f42a0ecd3189f6EB";
 
         App.contracts.dwitter = new web3.eth.Contract(abi, App.ganache);
 
@@ -1447,8 +1447,8 @@ App={
       $("#contractBalance").text(balance);
   
       $("#WithdrawContractBalance").on("click", async()=>{
-         let amount=$("#fundsWithdrawAmount").val();
-         await App.contracts.dwitter.methods.transferContractBalance(amount).send({from:App.account});
+        let amount=$("#fundsWithdrawAmount").val();
+        await App.contracts.dwitter.methods.transferContractBalance(amount).send({from:App.account});
         let balance=await App.contracts.dwitter.methods.getBalance().call({from:App.account});
         $("#contractBalance").text(balance);
       });
@@ -1457,20 +1457,35 @@ App={
       $("#generalMsgModal").modal("show");
       $("#generalModalMessage").text("Access Denied!!! You are not Owner of this Platform");
     }
+  },
+
+  registerUser:async(e) => {
+    e.preventDefault();
+    let userName = $("#username").val();
+    let name = $("#name").val();
+    let imageHash = "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4";
+    let coverImgHash = "0x617F2E2fD72FD9D5503197092aC168c91465E7f2";
+    let bio = $("#bio").val();
+
+    let response = await App.contracts.dwitter.methods.registerUser(userName, name, imageHash, coverImgHash, bio)
+                                                      .send({from: App.account[1]});
+
+    console.log(response);
+
+    let userStatus = await App.contracts.dwitter.methods.getUser().call();
+    console.log(userStatus);
+
+    // $("#dweetModal").modal("show");
+
   }
-
- 
-
- 
-
-
 };
+
 
 $(() => {
   $(window).on("load",() => {
     App.load();
     $("#fundsBtn").on("click",App.withdrawContractFunds);
     $("#maintainerBtn").on("click",App.maintainerSettings);
-
+    $("#registerBtn").on("click",App.registerUser);
   });
 });
